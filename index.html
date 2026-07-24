@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Writer's Friend</title>
+<style>
+  body { font-family: Georgia, serif; max-width: 700px; margin: 60px auto; padding: 0 20px; background: #faf8f5; color: #222; }
+  h1 { font-size: 1.6em; }
+  textarea { width: 100%; height: 140px; padding: 12px; font-size: 1em; font-family: inherit; border: 1px solid #ccc; border-radius: 6px; }
+  button { margin-top: 12px; padding: 10px 20px; font-size: 1em; background: #222; color: #fff; border: none; border-radius: 6px; cursor: pointer; }
+  button:disabled { opacity: 0.5; }
+  .pair { margin: 20px 0; padding: 16px; background: #fff; border-radius: 8px; border: 1px solid #eee; }
+  .original { color: #444; }
+  .inverted { color: #a33; margin-top: 8px; }
+  .label { font-size: 0.75em; text-transform: uppercase; letter-spacing: 0.05em; color: #999; }
+</style>
+</head>
+<body>
+
+<h1>Lrite</h1>
+<p>Paste your writing. See it inverted, sentence by sentence, to spot your real voice in the contrast.</p>
+
+<textarea id="input" placeholder="Paste your text here..."></textarea><br>
+<button id="submitBtn" onclick="invert()">Invert</button>
+
+<div id="output"></div>
+
+<script>
+async function invert() {
+  const text = document.getElementById('input').value.trim();
+  if (!text) return;
+  const btn = document.getElementById('submitBtn');
+  const output = document.getElementById('output');
+  btn.disabled = true;
+  btn.textContent = 'Thinking...';
+  output.innerHTML = '';
+
+  try {
+    const res = await fetch('/api/invert', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text })
+    });
+    const data = await res.json();
+
+    if (data.error) {
+      output.innerHTML = '<p style="color:red">' + data.error + '</p>';
+    } else {
+      output.innerHTML = data.pairs.map(p => `
+        <div class="pair">
+          <div class="label">Original</div>
+          <div class="original">${p.original}</div>
+          <div class="label" style="margin-top:8px">Inverted</div>
+          <div class="inverted">${p.inverted}</div>
+        </div>
+      `).join('');
+    }
+  } catch (err) {
+    output.innerHTML = '<p style="color:red">Something went wrong. Try again.</p>';
+  }
+
+  btn.disabled = false;
+  btn.textContent = 'Invert';
+}
+</script>
+
+</body>
+</html>
