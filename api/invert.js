@@ -35,11 +35,16 @@ Return ONLY valid JSON, no preamble, no markdown fences, in this exact shape:
       return res.status(500).json({ error: 'Anthropic API error', debug: data.error });
     }
 
-    const raw = data.content?.[0]?.text || '{}';
-    const clean = raw.replace(/```json|```/g, '').trim();
-    const parsed = JSON.parse(clean);
+    const data = await response.json();
 
-    res.status(200).json(parsed);
+    if (data.error) {
+      return res.status(500).json({ error: 'Anthropic API error', debug: data.error });
+    }
+
+    const raw = data.content?.[0]?.text || '{}';
+
+    // TEMPORARY DEBUG
+    return res.status(200).json({ debugFullResponse: data, debugRawText: raw });
   } catch (err) {
     res.status(500).json({ error: 'Failed to process text' });
   }
