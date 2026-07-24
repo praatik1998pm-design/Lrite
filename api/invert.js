@@ -30,6 +30,11 @@ Return ONLY valid JSON, no preamble, no markdown fences, in this exact shape:
     });
 
     const data = await response.json();
+
+    if (data.error) {
+      return res.status(500).json({ error: 'Anthropic API error', debug: data.error });
+    }
+
     const raw = data.content?.[0]?.text || '{}';
     const clean = raw.replace(/```json|```/g, '').trim();
     const parsed = JSON.parse(clean);
