@@ -20,7 +20,6 @@ export default async function handler(req, res) {
         model: 'claude-sonnet-4-6',
         max_tokens: 1500,
         system: `You invert sentences. For each sentence in the user's text, write a new sentence that flips its meaning, stance, or emotional charge while keeping a similar length and register. Do not simply negate with "not" — genuinely invert the idea.
-
 Return ONLY valid JSON, no preamble, no markdown fences, in this exact shape:
 {"pairs": [{"original": "...", "inverted": "..."}]}`,
         messages: [
@@ -35,17 +34,12 @@ Return ONLY valid JSON, no preamble, no markdown fences, in this exact shape:
       return res.status(500).json({ error: 'Anthropic API error', debug: data.error });
     }
 
-    const data = await response.json();
-
-    if (data.error) {
-      return res.status(500).json({ error: 'Anthropic API error', debug: data.error });
-    }
-
     const raw = data.content?.[0]?.text || '{}';
 
-    // TEMPORARY DEBUG
+    // TEMPORARY DEBUG - remove once working
     return res.status(200).json({ debugFullResponse: data, debugRawText: raw });
+
   } catch (err) {
-    res.status(500).json({ error: 'Failed to process text' });
+    res.status(500).json({ error: 'Failed to process text', debug: err.message });
   }
-} 
+}
