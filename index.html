@@ -21,7 +21,7 @@
 <p>Paste your writing. See it inverted, sentence by sentence, to spot your real voice in the contrast.</p>
 
 <textarea id="input" placeholder="Paste your text here..."></textarea><br>
-<button id="submitBtn" onclick="invert()">Invert</button>
+<button id="submitBtn" onclick="invert()">Write Like Self</button>
 
 <div id="output"></div>
 
@@ -32,7 +32,7 @@ async function invert() {
   const btn = document.getElementById('submitBtn');
   const output = document.getElementById('output');
   btn.disabled = true;
-  btn.textContent = 'Thinking...';
+  btn.textContent = 'Listening...';
   output.innerHTML = '';
 
   try {
@@ -60,7 +60,7 @@ async function invert() {
   }
 
   btn.disabled = false;
-  btn.textContent = 'Invert';
+  btn.textContent = 'Write Like Self';
 }
 </script>
 
