@@ -41,12 +41,12 @@ async function invert() {
     if (data.error) {
       output.innerHTML = '<p style="color:red">' + data.error + '</p>';
     } else {
-      const pairsHtml = data.pairs.map(p => `
+const pairsHtml = data.pairs.map(p => `
         <div class="pair">
           <div class="label">Original</div>
           <div class="original">${p.original}</div>
-          <div class="label" style="margin-top:8px">Inverted</div>
-          <div class="ritraw generated">${p.ritraw generated}</div>
+          <div class="label" style="margin-top:8px">Ritraw Generated</div>
+          <div class="inverted">${p.inverted}</div>
         </div>
       `).join('');
 
