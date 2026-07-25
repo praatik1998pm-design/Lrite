@@ -13,18 +13,15 @@
   .original { color: #444; }
   .inverted { color: #a33; margin-top: 8px; }
   .label { font-size: 0.75em; text-transform: uppercase; letter-spacing: 0.05em; color: #999; }
+  .nudge { margin-top: 24px; padding: 16px; font-style: italic; text-align: center; color: #555; border-top: 1px solid #eee; }
 </style>
 </head>
 <body>
-
 <h1>Lrite</h1>
 <p>Paste your writing. See it inverted, sentence by sentence, to spot your real voice in the contrast.</p>
-
 <textarea id="input" placeholder="Paste your text here..."></textarea><br>
 <button id="submitBtn" onclick="invert()">Write Like Self</button>
-
 <div id="output"></div>
-
 <script>
 async function invert() {
   const text = document.getElementById('input').value.trim();
@@ -34,7 +31,6 @@ async function invert() {
   btn.disabled = true;
   btn.textContent = 'Listening...';
   output.innerHTML = '';
-
   try {
     const res = await fetch('/api/invert', {
       method: 'POST',
@@ -42,11 +38,10 @@ async function invert() {
       body: JSON.stringify({ text })
     });
     const data = await res.json();
-
     if (data.error) {
       output.innerHTML = '<p style="color:red">' + data.error + '</p>';
     } else {
-      output.innerHTML = data.pairs.map(p => `
+      const pairsHtml = data.pairs.map(p => `
         <div class="pair">
           <div class="label">Original</div>
           <div class="original">${p.original}</div>
@@ -54,15 +49,19 @@ async function invert() {
           <div class="inverted">${p.inverted}</div>
         </div>
       `).join('');
+
+      output.innerHTML = pairsHtml + `
+        <div class="nudge">
+          Here's your sentence, inverted. Now go write on your own. Ditch AI.
+        </div>
+      `;
     }
   } catch (err) {
     output.innerHTML = '<p style="color:red">Something went wrong. Try again.</p>';
   }
-
   btn.disabled = false;
   btn.textContent = 'Write Like Self';
 }
 </script>
-
 </body>
 </html>
