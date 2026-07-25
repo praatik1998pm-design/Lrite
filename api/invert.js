@@ -35,10 +35,10 @@ Return ONLY valid JSON, no preamble, no markdown fences, in this exact shape:
     }
 
     const raw = data.content?.[0]?.text || '{}';
+    const clean = raw.replace(/```json|```/g, '').trim();
+    const parsed = JSON.parse(clean);
 
-    // TEMPORARY DEBUG - remove once working
-    return res.status(200).json({ debugFullResponse: data, debugRawText: raw });
-
+    res.status(200).json(parsed);
   } catch (err) {
     res.status(500).json({ error: 'Failed to process text', debug: err.message });
   }
