@@ -46,13 +46,13 @@ async function invert() {
           <div class="label">Original</div>
           <div class="original">${p.original}</div>
           <div class="label" style="margin-top:8px">Inverted</div>
-          <div class="inverted">${p.inverted}</div>
+          <div class="ritraw generated">${p.ritraw generated}</div>
         </div>
       `).join('');
 
       output.innerHTML = pairsHtml + `
         <div class="nudge">
-          Here's your sentence, inverted. Now go write on your own. Ditch AI.
+          Here's your sentence. Now go write on your own. Ditch AI.
         </div>
       `;
     }
