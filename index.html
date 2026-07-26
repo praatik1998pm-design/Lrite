@@ -1,36 +1,298 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Writer's Friend</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ritraw</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  body { font-family: Georgia, serif; max-width: 700px; margin: 60px auto; padding: 0 20px; background: #faf8f5; color: #222; }
-  h1 { font-size: 1.6em; }
-  textarea { width: 100%; height: 140px; padding: 12px; font-size: 1em; font-family: inherit; border: 1px solid #ccc; border-radius: 6px; }
-  button { margin-top: 12px; padding: 10px 20px; font-size: 1em; background: #222; color: #fff; border: none; border-radius: 6px; cursor: pointer; }
-  button:disabled { opacity: 0.5; }
-  .pair { margin: 20px 0; padding: 16px; background: #fff; border-radius: 8px; border: 1px solid #eee; }
-  .original { color: #444; }
-  .inverted { color: #a33; margin-top: 8px; }
-  .label { font-size: 0.75em; text-transform: uppercase; letter-spacing: 0.05em; color: #999; }
-  .nudge { margin-top: 24px; padding: 16px; font-style: italic; text-align: center; color: #555; border-top: 1px solid #eee; }
+  :root {
+    --bg: #EFEDE7;
+    --surface: #FFFFFF;
+    --ink: #1F2420;
+    --ink-soft: #5B615C;
+    --accent: #3B5D50;
+    --clay: #8B6F5C;
+    --line: #DEDAD0;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    height: 100%;
+    margin: 0;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', -apple-system, sans-serif;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  .topbar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 20px 20px 14px;
+    transition: padding 0.5s ease;
+    border-bottom: 1px solid transparent;
+  }
+
+  .topbar.compact {
+    padding: 14px 20px 12px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .brand {
+    font-family: 'Source Serif 4', serif;
+    font-weight: 600;
+    font-size: 2.6rem;
+    letter-spacing: -0.01em;
+    line-height: 1;
+    margin: 0;
+    transition: font-size 0.5s ease;
+  }
+
+  .topbar.compact .brand {
+    font-size: 1.3rem;
+  }
+
+  .tagline {
+    margin: 10px 0 0;
+    font-size: 0.95rem;
+    color: var(--ink-soft);
+    letter-spacing: 0.01em;
+    transition: font-size 0.4s ease, margin 0.4s ease, opacity 0.3s ease;
+  }
+
+  .topbar.compact .tagline {
+    font-size: 0.75rem;
+    margin: 2px 0 0;
+  }
+
+  .stage {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .stage-inner {
+    max-width: 680px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 24px 20px 40px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .stage.has-turns .stage-inner {
+    justify-content: flex-start;
+  }
+
+  .empty-hint {
+    text-align: center;
+    color: var(--ink-soft);
+    font-size: 0.9rem;
+    line-height: 1.6;
+    max-width: 420px;
+    margin: 0 auto;
+  }
+
+  .empty-hint b { color: var(--ink); font-weight: 600; }
+
+  .turn {
+    margin-bottom: 32px;
+    animation: rise 0.35s ease both;
+  }
+
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .turn-you {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 16px 18px;
+    font-size: 0.98rem;
+    line-height: 1.55;
+    white-space: pre-wrap;
+  }
+
+  .turn-label {
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-soft);
+    margin: 18px 0 8px;
+    display: block;
+  }
+
+  .turn-label.mine { color: var(--ink-soft); }
+  .turn-label.gen { color: var(--clay); }
+
+  .gen-line {
+    font-size: 0.98rem;
+    line-height: 1.55;
+    padding: 4px 0 4px 14px;
+    border-left: 2px solid var(--clay);
+    margin-bottom: 10px;
+    white-space: pre-wrap;
+  }
+
+  .nudge {
+    margin-top: 18px;
+    padding-top: 14px;
+    border-top: 1px solid var(--line);
+    font-family: 'Source Serif 4', serif;
+    font-style: italic;
+    font-size: 0.95rem;
+    color: var(--accent);
+  }
+
+  .error-line {
+    color: #A33;
+    font-size: 0.9rem;
+  }
+
+  .composer-wrap {
+    border-top: 1px solid var(--line);
+    background: var(--bg);
+    padding: 16px 20px 20px;
+  }
+
+  .composer {
+    max-width: 680px;
+    margin: 0 auto;
+    display: flex;
+    align-items: flex-end;
+    gap: 10px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 10px 10px 10px 16px;
+  }
+
+  textarea#input {
+    flex: 1;
+    border: none;
+    outline: none;
+    resize: none;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.98rem;
+    line-height: 1.5;
+    color: var(--ink);
+    background: transparent;
+    max-height: 200px;
+    min-height: 24px;
+    padding: 6px 0;
+  }
+
+  textarea#input::placeholder { color: #A6A79E; }
+
+  button#submitBtn {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 18px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: opacity 0.15s ease;
+  }
+
+  button#submitBtn:disabled { opacity: 0.55; cursor: default; }
+  button#submitBtn:not(:disabled):hover { opacity: 0.9; }
+
+  .hint-row {
+    max-width: 680px;
+    margin: 8px auto 0;
+    font-size: 0.72rem;
+    color: var(--ink-soft);
+    text-align: center;
+  }
 </style>
 </head>
 <body>
-<h1>Lrite</h1>
-<p>Paste your writing. See it inverted, sentence by sentence, to spot your real voice in the contrast.</p>
-<textarea id="input" placeholder="Paste your text here..."></textarea><br>
-<button id="submitBtn" onclick="invert()">Write Like Self</button>
-<div id="output"></div>
+
+<div class="topbar" id="topbar">
+  <h1 class="brand">ritraw</h1>
+  <p class="tagline">AI that helps you write by yourself</p>
+</div>
+
+<div class="stage" id="stage">
+  <div class="stage-inner" id="stageInner">
+    <p class="empty-hint">
+      Paste a sentence or a paragraph below. ritraw writes it back <b>inverted</b> —
+      so you can see, by contrast, what your own voice actually sounds like.
+    </p>
+  </div>
+</div>
+
+<div class="composer-wrap">
+  <div class="composer">
+    <textarea id="input" rows="1" placeholder="Paste your writing here..."></textarea>
+    <button id="submitBtn" onclick="invert()">Write Like Self</button>
+  </div>
+  <p class="hint-row">ritraw doesn't write for you. It shows you what you're not saying.</p>
+</div>
+
 <script>
+const textarea = document.getElementById('input');
+textarea.addEventListener('input', () => {
+  textarea.style.height = 'auto';
+  textarea.style.height = Math.min(textarea.scrollHeight, 200) + 'px';
+});
+textarea.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    invert();
+  }
+});
+
+let hasTurns = false;
+
 async function invert() {
-  const text = document.getElementById('input').value.trim();
+  const text = textarea.value.trim();
   if (!text) return;
+
   const btn = document.getElementById('submitBtn');
-  const output = document.getElementById('output');
+  const stage = document.getElementById('stage');
+  const stageInner = document.getElementById('stageInner');
+
+  if (!hasTurns) {
+    hasTurns = true;
+    stage.classList.add('has-turns');
+    document.getElementById('topbar').classList.add('compact');
+    stageInner.innerHTML = '';
+  }
+
   btn.disabled = true;
   btn.textContent = 'Listening...';
-  output.innerHTML = '';
+
+  const turn = document.createElement('div');
+  turn.className = 'turn';
+  turn.innerHTML = `<div class="turn-you">${escapeHtml(text)}</div>`;
+  stageInner.appendChild(turn);
+  stage.scrollTop = stage.scrollHeight;
+
+  textarea.value = '';
+  textarea.style.height = 'auto';
+
   try {
     const res = await fetch('/api/invert', {
       method: 'POST',
@@ -38,30 +300,32 @@ async function invert() {
       body: JSON.stringify({ text })
     });
     const data = await res.json();
-    if (data.error) {
-      output.innerHTML = '<p style="color:red">' + data.error + '</p>';
-    } else {
-const pairsHtml = data.pairs.map(p => `
-        <div class="pair">
-          <div class="label">Original</div>
-          <div class="original">${p.original}</div>
-          <div class="label" style="margin-top:8px">Ritraw Generated</div>
-          <div class="inverted">${p.inverted}</div>
-        </div>
-      `).join('');
 
-      output.innerHTML = pairsHtml + `
-        <div class="nudge">
-          Here's your sentence. Now go write on your own. Ditch AI.
-        </div>
+    if (data.error) {
+      turn.innerHTML += `<p class="error-line">${escapeHtml(data.error)}</p>`;
+    } else {
+      const genLines = data.pairs.map(p => `<div class="gen-line">${escapeHtml(p.inverted)}</div>`).join('');
+      turn.innerHTML += `
+        <span class="turn-label gen">ritraw generated</span>
+        ${genLines}
+        <div class="nudge">Here's your sentence, inverted. Now go write on your own. Ditch AI.</div>
       `;
     }
   } catch (err) {
-    output.innerHTML = '<p style="color:red">Something went wrong. Try again.</p>';
+    turn.innerHTML += `<p class="error-line">Something went wrong. Try again.</p>`;
   }
+
+  stage.scrollTop = stage.scrollHeight;
   btn.disabled = false;
   btn.textContent = 'Write Like Self';
 }
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
 </script>
+
 </body>
 </html>
