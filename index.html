@@ -237,8 +237,7 @@
 <div class="stage" id="stage">
   <div class="stage-inner" id="stageInner">
     <p class="empty-hint">
-      Paste a sentence or a paragraph below. ritraw writes it back <b>inverted</b> —
-      so you can see, by contrast, what your own voice actually sounds like.
+      Paste a sentence or a paragraph below. Ritraw writes it back in your <b>perfect tone of voice</b> 
     </p>
   </div>
 </div>
@@ -308,7 +307,7 @@ async function invert() {
       turn.innerHTML += `
         <span class="turn-label gen">ritraw generated</span>
         ${genLines}
-        <div class="nudge">Here's your sentence, inverted. Now go write on your own. Ditch AI.</div>
+        <div class="nudge">Here's your sentence. Now go write on your own. Ditch AI.</div>
       `;
     }
   } catch (err) {
